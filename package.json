@@ -4,7 +4,8 @@
   "description": "Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJS for IoT or Internet of Things.",
   "main": "lib/authbroker.js",
   "scripts": {
-    "test": "mocha --exit --recursive --bail --reporter spec tests",
+    //"test": "mocha --exit --recursive --bail --reporter spec tests",
+    "test": "./run-tests.sh",
     "ci": "mocha --recursive --bail --watch tests",
     "start": "node ./example/broker",
     "startmon": "DEBUG=* nodemon ./example/broker",

@@ -1,6 +1,6 @@
 # Authentication and Authorization Module for Brokers
 
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/) [![Build Status](https://travis-ci.org/borokero/borokero-auth.svg)](https://travis-ci.com/borokero/borokero-auth)
+[![Build Status](https://travis-ci.com/borokero/borokero-auth.svg)](https://travis-ci.com/borokero/borokero-auth)
 
 <div align="center">
     <img src="https://raw.githubusercontent.com/borokero/borokero-auth/main/docs/asset/repository-open-graph.png" width="500px"</img> 

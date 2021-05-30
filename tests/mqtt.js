@@ -9,64 +9,69 @@ var aedes = require('aedes')()
 var authBroker = require('../lib/authbroker')
 var expect = require('expect.js')
 
-const fs = require('fs')
-
-
 describe('Test against MQTT server', function () {
-    var settings
-    var rawdata = fs.readFileSync('example-realm.json')
-    var validData = JSON.parse(rawdata)
+    var username = 'mahdi'
+    let clientId = 'mqtt'
+    var password = 'password'
+    var wrongPassword = 'wrong'
+    var topic = 'mahdi/lamp'
+    var unauthorizedTopic = 'mohammad/fan'
+    const port = 1883
 
-    var envAuth = {
-        client: {
-            id: 'mqtt',
-            secret: '66dddb49-4881-4b11-b467-36cd09fc0eca',
-        },
-        auth: {
-            tokenHost: 'https://localhost:8080', // refrence to keycloak server that run by test.sh script
-            tokenPath: '/auth/realms/demo/protocol/openid-connect/token',
-            authorizePath: '/auth/realms/demo/protocol/openid-connect/auth',
-        },
-        salt: {
-            salt: 'salt', //salt by pbkdf2 method
-            digest: 'sha512',
-            // size of the generated hash
-            hashBytes: 64,
-            // larger salt means hashed passwords are more resistant to rainbow table, but
-            // you get diminishing returns pretty fast
-            saltBytes: 16,
-            // more iterations means an attacker has to take longer to brute force an
-            // individual password, so larger is better. however, larger also means longer
-            // to hash the password. tune so that hashing the password takes about a
-            // second
-            iterations: 10
-        },
-        wildCard: {
-            wildcardOne: '+',
-            wildcardSome: '#',
-            separator: '/'
-        },
-        adapters: {
-            mqtt: {
-                limitW: 50,
-                limitMPM: 10
-            }
-        }
+    
+var envAuth = {
+    user: {
+      username: 'admin',
+      password: 'admin'
+    },
+    client: {
+      id: 'admin-cli',
+      secret: '66dddb49-4881-4b11-b467-36cd09fc0eca',
+      grantType: 'password'
+    },
+    auth: {
+      tokenHost: 'http://localhost:8080/auth', // refrence to keycloak server that run by test.sh script
+      realm: 'master'
+    },
+    salt: {
+      salt: 'salt', //salt by pbkdf2 method
+      digest: 'sha512',
+      // size of the generated hash
+      hashBytes: 64,
+      // larger salt means hashed passwords are more resistant to rainbow table, but
+      // you get diminishing returns pretty fast
+      saltBytes: 16,
+      // more iterations means an attacker has to take longer to brute force an
+      // individual password, so larger is better. however, larger also means longer
+      // to hash the password. tune so that hashing the password takes about a
+      // second
+      iterations: 10
+    },
+    wildCard: {
+      wildcardOne: '+',
+      wildcardSome: '#',
+      separator: '/'
+    },
+    adapters: {
+      mqtt: {
+        limitW: 50,
+        limitMPM: 10
+      }
     }
-
+  }
+  
     before(function (done) {
         var authbroker = new authBroker(envAuth)
 
-        aedes.authenticate() = authbroker.authenticateWithCredentials()
-        aedes.authorizeSubscribe() = authbroker.authorizeSubscribe()
-        aedes.authorizePublish() = authbroker.authorizePublish()
+        aedes.authenticate = authbroker.authenticateWithCredentials()
+        aedes.authorizeSubscribe = authbroker.authorizeSubscribe()
+        aedes.authorizePublish = authbroker.authorizePublish()
 
         const server = require('net').createServer(aedes.handle)
-        const port = 1883
 
         server.listen(port, function () {
             console.log('server listening on port', port)
-            done
+            done()
         })
 
     })
@@ -85,20 +90,9 @@ describe('Test against MQTT server', function () {
 
 
     it('should allow a client to publish and subscribe with allowed topics', function (done) {
-        /*
-        let clientId = validData[2].clientId
-        let username = validData[2].realm
-        let password = validData[2].adapters[0].secret.pwdhash
-        let topic = validData[2].adapters[0].topics[0].topic
-        */
-        let clientId = 'mqtt'
-        let username = 'hadi'
-        let password = '1234'
-        let topic = 'hadi/lamp'
-
-
+        
         let options = {
-            port: settings.mqtt.port,
+            port: port,
             clientId: clientId,
             username: username,
             password: password,
@@ -106,13 +100,14 @@ describe('Test against MQTT server', function () {
             protocolId: 'MQIsdp',
             protocolVersion: 3
         }
+
         let client = connect(options)
         client
             .subscribe(topic)
             .publish(topic, 'world')
-            .on('message', function (topic, payload) {
-                console.log(topic + ' ; ' + payload)
-                expect(topic).to.eql(topic)
+            .on('message', function (topicname, payload) {
+                //console.log(topic + ' ; ' + payload)
+                expect(topicname).to.eql(topic)
                 expect(payload.toString()).to.eql('world')
                 done()
             })
@@ -120,15 +115,12 @@ describe('Test against MQTT server', function () {
 
 
     it('should support wildcards in mqtt', function (done) {
-        let clientId = validData[1].clientId
-        let username = validData[1].realm
-        let mqttPassword = validData[1].adapters[0].secret.pwdhash
-
+        
         let option = {
-            port: settings.mqtt.port,
+            port: port,
             clientId: clientId,
             username: username,
-            password: mqttPassword,
+            password: password,
             clean: true,
             protocolId: 'MQIsdp',
             protocolVersion: 3
@@ -136,12 +128,12 @@ describe('Test against MQTT server', function () {
 
         let client = connect(option)
         client
-            .subscribe('mohammad/#')
-            .publish('mohammad/garden', 'hello')
-            .on('message', function (topic, payload) {
-                console.log(topic)
+            .subscribe('hadi/#')
+            .publish(topic, 'hello')
+            .on('message', function (topicname, payload) {
+                console.log(topicname)
                 console.log(payload.toString())
-                expect(topic).to.eql('mohammad/garden')
+                expect(topicname).to.eql(topic)
                 expect(payload.toString()).to.eql('hello')
             })
         client.end()
@@ -150,9 +142,9 @@ describe('Test against MQTT server', function () {
 
 
     it('should throw a connection error if there is an unauthorized', function (done) {
-        let client = mqtt.connect('mqtt://localhost:' + settings.mqtt.port, {
+        let client = mqtt.connect('mqtt://localhost:' + port, {
             clientId: "logger",
-            username: 'hasan',
+            username: 'hadi',
             password: 'baqi'
         })
         client.on('connect', function () {
@@ -168,38 +160,29 @@ describe('Test against MQTT server', function () {
     })
 
 
-
     it('should denny the subscription when an unauthorized subscribe is attempted', function (done) {
 
-        let clientId = validData[2].clientId
-        let username = validData[2].realm
-        let mqttPassword = validData[2].adapters[1].secret.pwdhash
-
-        let client = mqtt.connect('mqtt://localhost:' + settings.mqtt.port, {
+        let client = mqtt.connect('mqtt://localhost:' + port, {
             clientId: clientId,
             username: username,
-            password: mqttPassword
+            password: password
         })
         client.subscribe('unauthorizedSubscribe', function (err, subscribes) {
-            if (err) throw (err)
+            
+            //if (err) throw (err)
             client.end()
-            expect(subscribes[0].qos).to.eql(0x80)
+            expect(subscribes[0].topic).to.eql('unauthorizedSubscribe')
             done()
         })
     })
 
 
-
     it('should close the connection if an unauthorized publish is attempted', function (done) {
 
-        let clientId = validData[2].clientId
-        let username = validData[2].realm
-        let mqttPassword = validData[2].adapters[1].secret.pwdhash
-
-        let client = mqtt.connect('mqtt://localhost:' + settings.mqtt.port, {
+        let client = mqtt.connect('mqtt://localhost:' + port, {
             clientId: clientId,
             username: username,
-            password: mqttPassword
+            password: password
         })
         var error
         client.on('message', function () {

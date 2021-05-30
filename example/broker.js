@@ -15,7 +15,7 @@ var envAuth = {
   },
   auth: {
     tokenHost: 'http://localhost:8080/auth', // refrence to keycloak server that run by test.sh script
-    realm: 'master',
+    realm: 'tokenRealmTest',
     tokenPath: '/auth/realms/borokero/protocol/openid-connect/token',
     authorizePath: '/auth/realms/borokero/protocol/openid-connect/auth',
   },

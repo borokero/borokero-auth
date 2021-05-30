@@ -11,16 +11,16 @@ Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJ
 
 ##  Getting Started
 
-* Install [Keycloak](https://www.keycloak.org/) locally. Make sure it's working.
+* 
 * If you want to run a test locally, clone this repo.
 
 ``` bash
-git clone https://github.com/authbroker/authbroker
-cd authbroker
+git clone https://github.com/borokero/borokero-auth
+cd borokero-auth
 npm install
-npm start
+npm run test
 ```
-It runs Broker example. You should attention broker needs a configure keycloak client
+It runs tests. You should attention broker needs to configure keycloak. Scripts start-server.sh and stop-server.sh help to start and stop [Keycloak](https://www.keycloak.org/) server with a demo realm. it needs docker command.
 
 ``` bash
 node ./example/demoKeycloak.js
@@ -29,7 +29,7 @@ It configs keycloak by demo clients and users.
 
 
 ### How Using it
-This module use Node-style callback and it can be used with different brokers like [Mosca](https://github.com/mcollina/mosca), [Aedes](https://github.com/mcollina/aedes), [Ponte](http://github.com/eclipse/ponte).
+This module use Node-style callback and it can be used with [Aedes](https://github.com/mcollina/aedes).
 
 ``` js
 'use strict'

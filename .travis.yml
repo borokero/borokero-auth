@@ -17,8 +17,5 @@ install:
 before_install:
   - ./scripts/start-server.sh
 
-before_script:
-  - make lint
-
 script: 
   - npm test

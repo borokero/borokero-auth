@@ -6,16 +6,10 @@ cache:
 addons:
   chrome: stable
 node_js:
-  - "10"
-  - "11"
-  - "12"
-  - "13"
+  - "14"
 
 services:
   - docker
-
-after_success:
-  - 'cat ./coverage/lcov.info | ./node_modules/.bin/coveralls'
 
 install:
   - npm install

@@ -1,9 +1,9 @@
 # Authentication and Authorization Module for Brokers
 
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/) [![Build Status](https://travis-ci.org/authbroker/authbroker.svg)](https://travis-ci.com/authbroker/authbroker)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/) [![Build Status](https://travis-ci.org/borokero/borokero-auth.svg)](https://travis-ci.com/borokero/borokero-auth)
 
 <div align="center">
-    <img src="https://github.com/authbroker/authbroker/blob/master/docs/asset/repository-open-graph.png" width="500px"</img> 
+    <img src="https://github.com/borokero/borokero-auth/blob/master/docs/asset/repository-open-graph.png" width="500px"</img> 
 </div>
 
 Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJS for IoT or Internet of Things. This repo is under development.
@@ -23,7 +23,7 @@ npm run test
 It runs tests. You should attention broker needs to configure keycloak. Scripts start-server.sh and stop-server.sh help to start and stop [Keycloak](https://www.keycloak.org/) server with a demo realm. it needs docker command.
 
 ``` bash
-node ./example/demoKeycloak.js
+bash ./scripts/start-server.sh
 ```
 It configs keycloak by demo clients and users. 
 
@@ -34,124 +34,52 @@ This module use Node-style callback and it can be used with [Aedes](https://gith
 ``` js
 'use strict'
 var ponte = require('ponte')
-var authBroker = require('@authbroker/authbroker')
+var authBroker = require('@borokero/borokero-auth')
+
 
 var envAuth = {
-  db: {
-    type: 'mongo',  //database type
-    url: 'mongodb://localhost:27017/paraffin',  //database url
-    collectionName: 'authBroker', //in vertical methodology, refer to collectionName
-    methodology: 'vertical',  // database artichecture will being vertical or horizontal
-    option: {}
+  user: {
+    username: 'admin',
+    password: 'admin'
   },
-  salt: {
-    salt: 'salt', //salt by pbkdf2 method
-    digest: 'sha512',
-    // size of the generated hash
-    hashBytes: 64,
-    // larger salt means hashed passwords are more resistant to rainbow table, but
-    // you get diminishing returns pretty fast
-    saltBytes: 16,
-    // more iterations means an attacker has to take longer to brute force an
-    // individual password, so larger is better. however, larger also means longer
-    // to hash the password. tune so that hashing the password takes about a
-    // second
-    iterations: 10
+  client: {
+    id: 'admin-cli',
+    secret: '66dddb49-4881-4b11-b467-36cd09fc0eca',
+    grantType: 'password'
   },
-  wildCard: { //wildcard is optional, if you ignore to set it, default is +, # , /
+  auth: {
+    tokenHost: 'http://localhost:8080/auth', // refrence to keycloak server that run by test.sh script
+    realm: 'tokenRealmTest',
+    tokenPath: '/auth/realms/borokero/protocol/openid-connect/token',
+    authorizePath: '/auth/realms/borokero/protocol/openid-connect/auth',
+  },
+  wildCard: {
     wildcardOne: '+',
     wildcardSome: '#',
     separator: '/'
   },
-  adapters: { // adapters setting
-    mqtt: {},
-    http: {},
-    coap: {}
+  adapters: {
+    mqtt: {
+      limitW: 50,
+      limitMPM: 10
+    }
   }
 }
 
-var auth = new authBroker(envAuth)
+var authbroker = new authBroker(envAuth)
 
-var ponteSettings = {
-  http: {
-    port: 3000,
-    authenticate: auth.authenticateHTTP(),
-    authorizeGet: auth.authorizeGetHTTP(),
-    authorizePut: auth.authorizePutHTTP()
-  },
-  mqtt: {
-    port: 1883, // tcp
-    authenticate: auth.authenticateMQTT(),
-    authorizePublish: auth.authorizePublishMQTT(),
-    authorizeSubscribe: auth.authorizeSubscribeMQTT()
-  },
-  persistence: {
-    // same as http://mcollina.github.io/mosca/docs/lib/persistence/mongo.js.html
-    type: 'mongo',
-    url: 'mongodb://localhost:27017/ponte'
-  },
-  broker: {
-    // same as https://github.com/mcollina/ascoltatori#mongodb
-    type: 'mongo',
-    url: 'mongodb://localhost:27017/ponte'
-  }
-}
+aedes.authenticate = authbroker.authenticateWithCredentials()
+aedes.authorizeSubscribe = authbroker.authorizeSubscribe()
+aedes.authorizePublish = authbroker.authorizePublish()
 
-var server = ponte(ponteSettings)
+const server = require('net').createServer(aedes.handle)
+const port = 1883
 
-// fired when the server is ready
-server.on('ready', function() {
-  console.log('Broker is up and running')
+server.listen(port, function () {
+  console.log('server listening on port', port)
 })
 ```
 
-
-The authentication performs with Mongodb server directly. You can change and customize Mongodb server settings with environemt variables. Data structure in Mongodb is like these;
-
-``` javascript
-{  
-   realm:'hello',
-   clientId:'hi313',
-   adapters:[  
-      {  
-         type:'mqtt',
-         enabled:true,
-         secret:{  
-            type:'basic',
-            pwdhash:'allah',
-            startAfter: ISODate,
-            expiredBefore: ISODate
-         },
-         topics:[  
-            {  
-               topic:'temperature',
-               action:'allow',
-               type:'rw'
-            },
-            {  
-               topic:'ali/+/hello',
-               action:'allow',
-               type:'r'
-            }
-         ]
-      },
-      {  
-         type:'http',
-         enabled:true,
-         secret:{  
-            type:'pbkdf2',
-            pwdhash:'qdsaFGhas2eW2Csgj'
-         },
-         topics:[  
-            {  
-               topic:'hi313/#',
-               action:'allow',
-               type:'rw'
-            }
-         ]
-      }
-   }
-```
 
 
 ## Contributing

@@ -1,0 +1,21 @@
+sudo: required
+dist: focal
+language: node_js
+cache:
+  npm: false
+addons:
+  chrome: stable
+node_js:
+  - "14"
+
+services:
+  - docker
+
+install:
+  - npm install
+
+before_install:
+  - ./scripts/start-server.sh
+
+script: 
+  - npm test

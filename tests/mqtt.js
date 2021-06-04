@@ -15,51 +15,47 @@ describe('Test against MQTT server', function () {
     var password = 'password'
     var wrongPassword = 'wrong'
     var topic = 'mahdi/lamp'
-    var unauthorizedTopic = 'mohammad/fan'
+    var anotherAllowedTopic = 'mohammad/fan'
     const port = 1883
 
-    
-var envAuth = {
-    user: {
-      username: 'admin',
-      password: 'admin'
-    },
-    client: {
-      id: 'admin-cli',
-      secret: '66dddb49-4881-4b11-b467-36cd09fc0eca',
-      grantType: 'password'
-    },
-    auth: {
-      tokenHost: 'http://localhost:8080/auth', // refrence to keycloak server that run by test.sh script
-      realm: 'master'
-    },
-    salt: {
-      salt: 'salt', //salt by pbkdf2 method
-      digest: 'sha512',
-      // size of the generated hash
-      hashBytes: 64,
-      // larger salt means hashed passwords are more resistant to rainbow table, but
-      // you get diminishing returns pretty fast
-      saltBytes: 16,
-      // more iterations means an attacker has to take longer to brute force an
-      // individual password, so larger is better. however, larger also means longer
-      // to hash the password. tune so that hashing the password takes about a
-      // second
-      iterations: 10
-    },
-    wildCard: {
-      wildcardOne: '+',
-      wildcardSome: '#',
-      separator: '/'
-    },
-    adapters: {
-      mqtt: {
-        limitW: 50,
-        limitMPM: 10
-      }
+
+    var envAuth = {
+        auth: {
+            realm: "tokenRealmTest",
+            topicClaim: "topics", // object key that indicates allowed topics
+            "auth-server-url": "http://localhost:8080/auth",
+            "ssl-required": "external",
+            resource: "admin-cli",
+            "public-client": true,
+            "confidential-port": 0,
+        },
+        jwt: {
+            salt: 'salt', //salt by pbkdf2 method
+            digest: 'sha512',
+            // size of the generated hash
+            hashBytes: 64,
+            // larger salt means hashed passwords are more resistant to rainbow table, but
+            // you get diminishing returns pretty fast
+            saltBytes: 16,
+            // more iterations means an attacker has to take longer to brute force an
+            // individual password, so larger is better. however, larger also means longer
+            // to hash the password. tune so that hashing the password takes about a
+            // second
+            iterations: 10
+        },
+        wildCard: {
+            wildcardOne: '+',
+            wildcardSome: '#',
+            separator: '/'
+        },
+        adapters: {
+            mqtt: {
+                limitW: 50,
+                limitMPM: 10
+            }
+        }
     }
-  }
-  
+
     before(function (done) {
         var authbroker = new authBroker(envAuth)
 
@@ -89,8 +85,8 @@ var envAuth = {
     }
 
 
-    it('should allow a client to publish and subscribe with allowed topics', function (done) {
-        
+    it('should allow a client to publish and subscribe with allowed locally topics', function (done) {
+
         let options = {
             port: port,
             clientId: clientId,
@@ -113,9 +109,33 @@ var envAuth = {
             })
     })
 
+    it('should allow a client to publish and subscribe with shared topic', function (done) {
+
+        let options = {
+            port: port,
+            clientId: clientId,
+            username: username,
+            password: password,
+            clean: true,
+            protocolId: 'MQIsdp',
+            protocolVersion: 3
+        }
+
+        let client = connect(options)
+        client
+            .subscribe(anotherAllowedTopic)
+            .publish(anotherAllowedTopic, 'world')
+            .on('message', function (topicname, payload) {
+                //console.log(topic + ' ; ' + payload)
+                expect(topicname).to.eql(anotherAllowedTopic)
+                expect(payload.toString()).to.eql('world')
+                done()
+            })
+    })
+
 
     it('should support wildcards in mqtt', function (done) {
-        
+
         let option = {
             port: port,
             clientId: clientId,
@@ -145,7 +165,7 @@ var envAuth = {
         let client = mqtt.connect('mqtt://localhost:' + port, {
             clientId: "logger",
             username: 'hadi',
-            password: 'baqi'
+            password: wrongPassword
         })
         client.on('connect', function () {
             client.end()
@@ -168,7 +188,7 @@ var envAuth = {
             password: password
         })
         client.subscribe('unauthorizedSubscribe', function (err, subscribes) {
-            
+
             //if (err) throw (err)
             client.end()
             expect(subscribes[0].topic).to.eql('unauthorizedSubscribe')

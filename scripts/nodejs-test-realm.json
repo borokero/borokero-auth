@@ -4286,6 +4286,7 @@
       "email": "mahdi.mahdavi@gmail.com",
       "firstName": "Mahdi",
       "lastName": "Mahdavi",
+      "attributes": {"topics":["reza/lamp","mohammad/fan"]},
       "credentials": [{
         "type": "password",
         "value": "password"
@@ -4300,15 +4301,70 @@
     },
     "groups": [],
     "clients": [{
-      "clientId": "customer-portal",
-      "enabled": true,
-      "adminUrl": "/customer-portal",
-      "baseUrl": "/customer-portal",
-      "redirectUris": [
-        "/customer-portal/*"
-      ],
-      "secret": "password",
-      "directAccessGrantsEnabled": true
-    }]
+        "clientId": "customer-portal",
+        "enabled": true,
+        "adminUrl": "/customer-portal",
+        "baseUrl": "/customer-portal",
+        "redirectUris": [
+          "/customer-portal/*"
+        ],
+        "secret": "password",
+        "directAccessGrantsEnabled": true
+      },
+      {
+        "id": "a3d05323-64b8-4f76-8fd9-2ffbb9ca3ac0",
+        "clientId": "admin-cli",
+        "name": "${client_admin-cli}",
+        "surrogateAuthRequired": false,
+        "enabled": true,
+        "alwaysDisplayInConsole": false,
+        "clientAuthenticatorType": "client-secret",
+        "redirectUris": [],
+        "webOrigins": [],
+        "notBefore": 0,
+        "bearerOnly": false,
+        "consentRequired": false,
+        "standardFlowEnabled": false,
+        "implicitFlowEnabled": false,
+        "directAccessGrantsEnabled": true,
+        "serviceAccountsEnabled": false,
+        "publicClient": true,
+        "frontchannelLogout": false,
+        "protocol": "openid-connect",
+        "attributes": {},
+        "authenticationFlowBindingOverrides": {},
+        "fullScopeAllowed": false,
+        "nodeReRegistrationTimeout": 0,
+        "protocolMappers": [{
+          "id": "0d6d61c5-4302-4010-985f-dec7c6daffcc",
+          "name": "topics",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "aggregate.attrs": "true",
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "user.attribute": "topics",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "topics",
+            "jsonType.label": "String"
+          }
+        }],
+        "defaultClientScopes": [
+          "web-origins",
+          "profile",
+          "roles",
+          "email"
+        ],
+        "optionalClientScopes": [
+          "address",
+          "phone",
+          "offline_access",
+          "microprofile-jwt"
+        ]
+      }
+    ]
   }
 ]

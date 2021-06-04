@@ -4,22 +4,16 @@ var aedes = require('aedes')()
 var authBroker = require('../lib/authbroker')
 
 var envAuth = {
-  user: {
-    username: 'admin',
-    password: 'admin'
-  },
-  client: {
-    id: 'admin-cli',
-    secret: '66dddb49-4881-4b11-b467-36cd09fc0eca',
-    grantType: 'password'
-  },
   auth: {
-    tokenHost: 'http://localhost:8080/auth', // refrence to keycloak server that run by test.sh script
-    realm: 'tokenRealmTest',
-    tokenPath: '/auth/realms/borokero/protocol/openid-connect/token',
-    authorizePath: '/auth/realms/borokero/protocol/openid-connect/auth',
+    realm: "tokenRealmTest",
+    "auth-server-url": "http://localhost:8080/auth",
+    "ssl-required": "external",
+    resource: "admin-cli",
+    "public-client": true,
+    "confidential-port": 0,
+    keys: 'topics' // object key that indicates allowed topics
   },
-  salt: {
+  jwt: {
     salt: 'salt', //salt by pbkdf2 method
     digest: 'sha512',
     // size of the generated hash

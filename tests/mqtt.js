@@ -15,18 +15,19 @@ describe('Test against MQTT server', function () {
     var password = 'password'
     var wrongPassword = 'wrong'
     var topic = 'mahdi/lamp'
-    var unauthorizedTopic = 'mohammad/fan'
+    var anotherAllowedTopic = 'mohammad/fan'
     const port = 1883
 
 
     var envAuth = {
         auth: {
             realm: "tokenRealmTest",
+            topicClaim: "topics", // object key that indicates allowed topics
             "auth-server-url": "http://localhost:8080/auth",
             "ssl-required": "external",
             resource: "admin-cli",
             "public-client": true,
-            "confidential-port": 0
+            "confidential-port": 0,
         },
         jwt: {
             salt: 'salt', //salt by pbkdf2 method
@@ -84,7 +85,7 @@ describe('Test against MQTT server', function () {
     }
 
 
-    it('should allow a client to publish and subscribe with allowed topics', function (done) {
+    it('should allow a client to publish and subscribe with allowed locally topics', function (done) {
 
         let options = {
             port: port,
@@ -103,6 +104,30 @@ describe('Test against MQTT server', function () {
             .on('message', function (topicname, payload) {
                 //console.log(topic + ' ; ' + payload)
                 expect(topicname).to.eql(topic)
+                expect(payload.toString()).to.eql('world')
+                done()
+            })
+    })
+
+    it('should allow a client to publish and subscribe with shared topic', function (done) {
+
+        let options = {
+            port: port,
+            clientId: clientId,
+            username: username,
+            password: password,
+            clean: true,
+            protocolId: 'MQIsdp',
+            protocolVersion: 3
+        }
+
+        let client = connect(options)
+        client
+            .subscribe(anotherAllowedTopic)
+            .publish(anotherAllowedTopic, 'world')
+            .on('message', function (topicname, payload) {
+                //console.log(topic + ' ; ' + payload)
+                expect(topicname).to.eql(anotherAllowedTopic)
                 expect(payload.toString()).to.eql('world')
                 done()
             })
@@ -140,7 +165,7 @@ describe('Test against MQTT server', function () {
         let client = mqtt.connect('mqtt://localhost:' + port, {
             clientId: "logger",
             username: 'hadi',
-            password: 'baqi'
+            password: wrongPassword
         })
         client.on('connect', function () {
             client.end()

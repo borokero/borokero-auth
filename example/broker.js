@@ -10,7 +10,8 @@ var envAuth = {
     "ssl-required": "external",
     resource: "admin-cli",
     "public-client": true,
-    "confidential-port": 0
+    "confidential-port": 0,
+    keys: 'topics' // object key that indicates allowed topics
   },
   jwt: {
     salt: 'salt', //salt by pbkdf2 method

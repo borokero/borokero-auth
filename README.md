@@ -18,14 +18,10 @@ Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJ
 git clone https://github.com/borokero/borokero-auth
 cd borokero-auth
 npm install
+bash ./scripts/start-server.sh
 npm run test
 ```
-It runs tests. You should attention broker needs to configure keycloak. Scripts start-server.sh and stop-server.sh help to start and stop [Keycloak](https://www.keycloak.org/) server with a demo realm. it needs docker command.
-
-``` bash
-bash ./scripts/start-server.sh
-```
-It configs keycloak by demo clients and users. 
+It runs tests. You should attention broker needs to configure keycloak. Scripts start-server.sh and stop-server.sh help to start and stop [Keycloak](https://www.keycloak.org/) server with a demo realm. It configs keycloak by demo clients and users and needs docker command.
 
 
 ### How Using it
@@ -33,25 +29,32 @@ This module use Node-style callback and it can be used with [Aedes](https://gith
 
 ``` js
 'use strict'
-var ponte = require('ponte')
+var aedes = require('aedes')
 var authBroker = require('@borokero/borokero-auth')
 
 
 var envAuth = {
-  user: {
-    username: 'admin',
-    password: 'admin'
-  },
-  client: {
-    id: 'admin-cli',
-    secret: '66dddb49-4881-4b11-b467-36cd09fc0eca',
-    grantType: 'password'
-  },
   auth: {
-    tokenHost: 'http://localhost:8080/auth', // refrence to keycloak server that run by test.sh script
-    realm: 'tokenRealmTest',
-    tokenPath: '/auth/realms/borokero/protocol/openid-connect/token',
-    authorizePath: '/auth/realms/borokero/protocol/openid-connect/auth',
+    realm: "tokenRealmTest",
+    "auth-server-url": "http://localhost:8080/auth",
+    "ssl-required": "external",
+    resource: "admin-cli",
+    "public-client": true,
+    "confidential-port": 0
+  },
+  jwt: {
+    salt: 'salt', //salt by pbkdf2 method
+    digest: 'sha512',
+    // size of the generated hash
+    hashBytes: 64,
+    // larger salt means hashed passwords are more resistant to rainbow table, but
+    // you get diminishing returns pretty fast
+    saltBytes: 16,
+    // more iterations means an attacker has to take longer to brute force an
+    // individual password, so larger is better. however, larger also means longer
+    // to hash the password. tune so that hashing the password takes about a
+    // second
+    iterations: 10
   },
   wildCard: {
     wildcardOne: '+',
@@ -87,8 +90,6 @@ server.listen(port, function () {
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
 
 Anyone with interest in or experience with the following technologies are encouraged to join the project.
-And if you fancy it, join the [Telegram group](t.me/joinchat/AuKmG05CNFTz0bsBny9igg) here for Devs and say Hello!
-
 
 ## Authors / Contributors
 

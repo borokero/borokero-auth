@@ -22,7 +22,6 @@ describe('Test against MQTT server', function () {
     var envAuth = {
         auth: {
             realm: "tokenRealmTest",
-            topicClaim: "topics", // object key that indicates allowed topics
             "auth-server-url": "http://localhost:8080/auth",
             "ssl-required": "external",
             resource: "admin-cli",

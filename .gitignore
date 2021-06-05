@@ -40,8 +40,6 @@ node_modules
 .idea
 
 # npm package lock
-package-lock.json
-yarn.lock
 
 others
 .DS_Store

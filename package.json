@@ -1,6 +1,6 @@
 {
   "name": "@borokero/borokero-auth",
-  "version": "0.0.0-development",
+  "version": "0.0.1-development",
   "description": "Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJS for IoT or Internet of Things.",
   "main": "lib/authbroker.js",
   "scripts": {

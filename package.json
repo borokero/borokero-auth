@@ -1,6 +1,6 @@
 {
   "name": "@borokero/borokero-auth",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
   "description": "Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJS for IoT or Internet of Things.",
   "main": "lib/authbroker.js",
   "scripts": {
@@ -8,21 +8,20 @@
     "ci": "mocha --recursive --bail --watch tests",
     "start": "node ./example/broker",
     "startmon": "DEBUG=* nodemon ./example/broker",
-    "clean-install": "sudo rm -rf node_modules && npm install"
+    "clean-install": "sudo rm -rf node_modules && npm install",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/authbroker/authbroker"
+    "url": "https://github.com/borokero/borokero-auth"
   },
   "keywords": [
     "moscajs",
     "aedes",
-    "ponte",
     "authentication",
     "authorization",
     "mqtt",
     "http",
-    "coap",
     "credintial",
     "access token"
   ],
@@ -47,7 +46,8 @@
     "mocha": "6.2.0",
     "mqtt": "^3.0.0",
     "ponte": "0.0.16",
-    "supertest": "4.0.2"
+    "supertest": "4.0.2",
+    "semantic-release": "^17.4.3"
   },
   "publishConfig": {
     "access": "public"

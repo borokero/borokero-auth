@@ -5,11 +5,9 @@
   "main": "lib/authbroker.js",
   "scripts": {
     "test": "mocha --exit --recursive --bail --reporter spec tests",
-    "ci": "mocha --recursive --bail --watch tests",
     "start": "node ./example/broker",
     "startmon": "DEBUG=* nodemon ./example/broker",
-    "clean-install": "sudo rm -rf node_modules && npm install",
-    "semantic-release": "semantic-release"
+    "clean-install": "sudo rm -rf node_modules && npm install"
   },
   "repository": {
     "type": "git",
@@ -46,8 +44,7 @@
     "mocha": "6.2.0",
     "mqtt": "^3.0.0",
     "ponte": "0.0.16",
-    "supertest": "4.0.2",
-    "semantic-release": "^17.4.3"
+    "supertest": "4.0.2"
   },
   "publishConfig": {
     "access": "public"

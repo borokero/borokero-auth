@@ -1,6 +1,6 @@
 {
   "name": "@borokero/borokero-auth",
-  "version": "0.0.2-development",
+  "version": "0.0.3-development",
   "description": "Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJS for IoT or Internet of Things.",
   "main": "lib/authbroker.js",
   "scripts": {
@@ -31,21 +31,21 @@
     "url": "https://github.com/borokero/borokero-auth/issues"
   },
   "dependencies": {
-    "debug": "4.1.1",
-    "jsonwebtoken": "8.5.1",
-    "keycloak-connect": "13.0.1",
-    "qlobber": "3.1.0",
-    "request": "2.88.0"
+    "debug": "4.3.4",
+    "jsonwebtoken": "9.0.2",
+    "keycloak-connect": "23.0.6",
+    "qlobber": "8.0.1",
+    "request": "2.88.2"
   },
   "devDependencies": {
     "@authbroker/mongo-benchmark": "0.0.9",
-    "aedes": "0.46.0",
-    "chai": "4.2.0",
-    "expect.js": "^0.3.1",
-    "mocha": "6.2.0",
-    "mqtt": "^3.0.0",
+    "aedes": "0.51.0",
+    "chai": "5.1.0",
+    "expect.js": "0.3.1",
+    "mocha": "10.3.0",
+    "mqtt": "5.3.5",
     "ponte": "0.0.16",
-    "supertest": "4.0.2"
+    "supertest": "6.3.4"
   },
   "publishConfig": {
     "access": "public"

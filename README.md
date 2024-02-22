@@ -1,12 +1,11 @@
 # Authentication and Authorization Module for Brokers
 
-[![Build Status](https://travis-ci.com/borokero/borokero-auth.svg)](https://travis-ci.com/borokero/borokero-auth)
 
 <div align="center">
     <img src="https://raw.githubusercontent.com/borokero/borokero-auth/main/docs/asset/repository-open-graph.png" width="500px"</img> 
 </div>
 
-Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJS for IoT or Internet of Things. This repo is under development.
+Authentication and Authorization module of MQTT/CoAP Brokers based on NodeJS for IoT or Internet of Things. This repo is under development.
 
 
 ##  Getting Started
@@ -18,11 +17,9 @@ Authentication and Authorization module of HTTP/MQTT/CoAP Brokers based on NodeJ
 git clone https://github.com/borokero/borokero-auth
 cd borokero-auth
 npm install
-bash ./scripts/start-server.sh
 npm run test
 ```
-It runs tests. You should attention broker needs to configure keycloak. Scripts start-server.sh and stop-server.sh help to start and stop [Keycloak](https://www.keycloak.org/) server with a demo realm. It configs keycloak by demo clients and users and needs docker command.
-
+It runs tests.
 
 ### How Using it
 This module use Node-style callback and it can be used with [Aedes](https://github.com/mcollina/aedes).
@@ -34,14 +31,6 @@ var authBroker = require('@borokero/borokero-auth')
 
 
 var envAuth = {
-  auth: {
-    realm: "tokenRealmTest",
-    "auth-server-url": "http://localhost:8080/auth",
-    "ssl-required": "external",
-    resource: "admin-cli",
-    "public-client": true,
-    "confidential-port": 0
-  },
   jwt: {
     salt: 'salt', //salt by pbkdf2 method
     digest: 'sha512',
@@ -71,7 +60,7 @@ var envAuth = {
 
 var authbroker = new authBroker(envAuth)
 
-aedes.authenticate = authbroker.authenticateWithCredentials()
+aedes.authenticate = authbroker.authenticateWithJWT()
 aedes.authorizeSubscribe = authbroker.authorizeSubscribe()
 aedes.authorizePublish = authbroker.authorizePublish()
 

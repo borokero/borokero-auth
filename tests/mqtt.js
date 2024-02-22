@@ -58,7 +58,7 @@ describe('Test against MQTT server', function () {
     before(function (done) {
         var authbroker = new authBroker(envAuth)
 
-        aedes.authenticate = authbroker.authenticateWithCredentials()
+        aedes.authenticate = authbroker.authenticateWithJWT()
         aedes.authorizeSubscribe = authbroker.authorizeSubscribe()
         aedes.authorizePublish = authbroker.authorizePublish()
 
